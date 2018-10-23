@@ -1,15 +1,16 @@
-package contract.examples;
+package org.economicsl.contract.examples;
 
-import agent.Agent;
-import contract.MasonScheduledContracts;
-import contract.handler.ContractHandler;
-import contract.messages.ObligationResponse;
-import contract.obligation.Obligation;
-import contract.obligation.ScheduledObligation;
-import inventory.Good;
+import org.economicsl.agent.Agent;
+import org.economicsl.contract.ScheduledContracts;
+import org.economicsl.contract.handler.ContractHandler;
+import org.economicsl.contract.messages.ObligationResponse;
+import org.economicsl.contract.obligation.Obligation;
+import org.economicsl.contract.obligation.ScheduledObligation;
+import org.economicsl.inventory.Contract;
+import org.economicsl.inventory.Good;
 import sim.engine.SimState;
 
-public class FixedBond extends MasonScheduledContracts {
+public class FixedBond extends ScheduledContracts {
 
     private State currentState;
     private Agent seller;
@@ -21,7 +22,7 @@ public class FixedBond extends MasonScheduledContracts {
     private Double gapBetweenCoupons;
 
     public FixedBond(String name, SimState state, ContractHandler handler, Agent seller, Agent buyer, Long principal,
-	    Long coupon, Integer numCoupons, String goodName, Double gapBetweenCoupons) {
+					 Long coupon, Integer numCoupons, String goodName, Double gapBetweenCoupons) {
 
 	super(name, state, handler);
 
@@ -34,7 +35,6 @@ public class FixedBond extends MasonScheduledContracts {
 	this.goodName = goodName;
 	this.gapBetweenCoupons = gapBetweenCoupons;
 
-	this.scheduleEvent(requestNextObligation(state), state);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class FixedBond extends MasonScheduledContracts {
 	    break;
 	case COUPON:
 	    // if all the coupons have been paid, then move the
-	    // contract to a matured status.
+	    // org.economicsl.contract to a matured status.
 	    if (this.numCoupons <= 0) {
 		this.currentState = State.MATURED;
 		// if there are more coupons to be paid, subtract the number
@@ -89,7 +89,7 @@ public class FixedBond extends MasonScheduledContracts {
 	    }
 	    break;
 
-	// if the matured payment has been made, terminate the contract.
+	// if the matured payment has been made, terminate the org.economicsl.contract.
 	case MATURED:
 	    this.currentState = State.TERMINATED;
 	}
@@ -111,12 +111,25 @@ public class FixedBond extends MasonScheduledContracts {
 	}
 	System.out.println("The current state is: " + this.currentState + ". Therefore, " + from.getName() + " gave "
 		+ to.getName() + " " + quantity + " of " + what);
-	System.out.println("Agent " + from.getName() + " has $" + from.getInventory().getAllGoodEntries().get("cash"));
-	System.out.println("Agent " + to.getName() + " has $" + to.getInventory().getAllGoodEntries().get("cash"));
+	try {
+	    System.out
+		    .println("Agent " + from.getName() + " has $" + from.getInventory().getGood("cash").getQuantity());
+	    System.out.println("Agent " + to.getName() + " has $" + to.getInventory().getGood("cash").getQuantity());
+	} catch (Exception e) {
+	    System.out.println(e.getMessage());
+	    e.printStackTrace();
+	}
 
     }
 
     private enum State {
 	PRINCIPAL, COUPON, DEFAULT, MATURED, TERMINATED
     }
+
+    @Override
+    public Contract addition(Contract c) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
 }
